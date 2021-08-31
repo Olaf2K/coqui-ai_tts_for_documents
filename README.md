@@ -1,4 +1,7 @@
 # coqui-ai_tts_for_documents
+
+Based on: https://tts.readthedocs.io/en/latest/index.html
+
 Reads file line by line and turns into speech, after stitches everything together into one file
 
 Tested on windows 11; WSL system: Ubuntu 20.04
