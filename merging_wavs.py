@@ -4,7 +4,7 @@ import wave
 import soundfile
 
 
-path_to_dir = "/mnt/c/Users/ikola/Documents/tts/batch/out"
+path_to_dir = "out"
 
 list_of_dirs = os.listdir(path_to_dir)
 for dirs in list_of_dirs:
