@@ -3,7 +3,7 @@
 count=0
 
 while read p; do
-  tts --text "$p" --model_name "tts_models/en/ljspeech/tacotron2-DDC" --out_path $count+".wav"
+  tts --text "$p" --model_name "tts_models/en/ljspeech/tacotron2-DDC" --out_path "out/"$count+".wav"
   count=$((count+1))
   echo $p
 done <in.txt
