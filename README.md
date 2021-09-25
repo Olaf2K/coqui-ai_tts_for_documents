@@ -10,8 +10,8 @@ Install TTS module by running 'pip install tts' #see https://tts.readthedocs.io/
 
 Put the sentences you want to synthesize in one sentece per line in a file called 'in.txt'
 
-create a folder called "out"
+Create a folder called "out". This hold the temporary audio files per sentence.
 
-Run in bash synth_bash_TTS_0.2.0
+Run bash script synth_bash_TTS_0.2.0
 
-Run merging_wavs.py stitch everything together
+Combined audio file is now deposited in the current directory
