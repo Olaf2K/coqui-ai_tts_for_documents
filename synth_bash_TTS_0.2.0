@@ -1,16 +1,51 @@
-#tts
+#!/bin/bash
 
+# Neural text-to-speech (TTS) program using Mozilla TTS
+
+# Clear output folder
+echo "Clearing \"out\" folder..."
+rm ./out/*
+
+# Keep track of .wav output file number
 count=0
 
-while read p; do
-  tts --text "$p" --model_name "tts_models/en/ljspeech/tacotron2-DDC" --out_path "out/"$count".wav"
-  count=$((count+1))
-  echo $p
-done <in.txt
+# Loop over all input files
+echo "Starting text-to-speech on files in \"in\" folder"
+for file in ./in/*; do
+    # Remove DOS-type newlines
+    textUnix=$(tr --delete "\r" < "$file")
+	# Remove hypenation of words due to the end of a line
+	textToSynth1=$(echo "${textUnix}" | awk -v RS= '{gsub(/-\n/,""); print}')
+    # Convert .txt input file to single-line text (added space to avoid gluing of titles with text)
+    textToSynth2=$(echo "${textToSynth1}" | awk -v RS= '{gsub(/\n/," "); print}')
+    # Convert single-line text to one sentence per line
+    textToSynth3=$(echo "${textToSynth2}" | awk '{gsub(/\. /,".\n"); print}')
+    # Remove anything between parentheses (i.e. citations and equation nubmers)
+    textToSynth4=$(echo "${textToSynth3}" | awk '{gsub(/\([a-zA-Z0-9., ]*\)/,""); print}')
+    # Remove anything between square brackets
+    textToSynth5=$(echo "${textToSynth4}" | awk '{gsub(/\[[A-Z0-9.,]*\]/,""); print}')
+	# Remove lines with less than 2 characters (incl. empty lines)
+    textToSynth6=$(echo "${textToSynth5}" | awk 'length > 2')
+    # Read each sentence and apply the text-to-speech model
+    while read -r line; do
+	# Split lines that are too long (the 1 assures that all lines are printed)
+	# Words per line set to 12
+	splitLine=$(echo "${line}" | awk '{for(i=10;i<NF;i+=10){$i=$i RS};gsub(RS FS,RS,$0)}1')
+	while read -r sublines; do
+	    tts --text "${sublines}" --model_name "tts_models/en/ljspeech/tacotron2-DDC" --out_path "out/"$count".wav"
+	    count=$((count+1))
+	done <<< "$splitLine"
+    done <<< "$textToSynth6"
+done
 
+# This command makes sure we wait until the decoder is done
+wait
 
+# Run the script that merges the audio files
+echo "Merging output files..."
+python3 ./merging_wavs.py
 
-
+echo "Done!"
 
 
 
